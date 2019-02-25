@@ -1,0 +1,28 @@
+{
+  "name": "latruncularius",
+  "version": "1.0.0",
+  "description": "Online chess game",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rishinath4159/latruncularius.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rishinath4159/latruncularius/issues"
+  },
+  "homepage": "https://github.com/rishinath4159/latruncularius#readme",
+  "devDependencies": {
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3"
+  },
+  "dependencies": {
+    "jquery": "^3.3.1"
+  }
+}
