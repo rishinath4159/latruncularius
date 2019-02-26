@@ -1,2 +1,2 @@
 # latruncularius
-Online chess game
+Multiplayer chess game using `chess.js` and `chessboard.js` in Node using `webpack`.
