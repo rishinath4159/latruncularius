@@ -1,13 +1,26 @@
-import "../assets/js/chessboard-0.3.0";
+import "./js/chessboard-0.3.0";
+import * as Chess from "chess.js";
 
-const cfg = {
-    draggable: true,
-    dropOffBoard: 'snapback', // this is the default
-    position: 'start'
+let board;
+const game = new Chess();
+
+const makeRandomMove = function() {
+    let possibleMoves = game.moves();
+
+    // exit if the game is over
+    if (game.game_over() === true ||
+        game.in_draw() === true ||
+        possibleMoves.length === 0) return;
+
+    let randomIndex = Math.floor(Math.random() * possibleMoves.length);
+    game.move(possibleMoves[randomIndex]);
+    board.position(game.fen());
+
+    window.setTimeout(makeRandomMove, 500);
 };
 
-const board = ChessBoard('board', cfg);
+board = ChessBoard('board', 'start');
 
-/*let div = document.createElement("div");
-div.setAttribute = ('class', 'board');
-document.body.appendChild(div);*/
+window.setTimeout(makeRandomMove, 500);
+
+

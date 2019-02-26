@@ -23,6 +23,7 @@
     "webpack-cli": "^3.2.3"
   },
   "dependencies": {
+    "chess.js": "^0.10.2",
     "jquery": "^3.3.1"
   }
 }
