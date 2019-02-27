@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+    <title>latruncularius</title>
+    <link rel="stylesheet" href="/css/chessboard-0.3.0.css"/>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="/js/chessboard-0.3.0.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        $(function () {
+            const socket = io();
+            const config = {
+                position: 'start',
+                draggable: true,
+                onDrop: onDrop
+            };
+
+            function onDrop(source, target, piece, newPos, oldPos, orientation) {
+                socket.emit('board fen', ChessBoard.objToFen(newPos));
+            };
+
+            socket.on('board fen', fen => {
+                board1.position(fen);
+            });
+
+            const board1 = ChessBoard('board1', config);
+        });
+    </script>
+</head>
+<body>
+    <div id="board1" style="width: 400px"></div>
+</body>
+</html>
+
+<!--<html>
+    <head>
+        <script src="/socket.io/socket.io.js"></script>
+        <link rel="stylesheet" type="text/css" href="/css/chessboard-0.3.0.css">
+        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+        <script>
+            $(function () {
+                const socket = io();
+                $('form').submit(function(e){
+                    e.preventDefault(); // prevents page reloading
+                    socket.emit('chat message', $('#m').val());
+                    $('#m').val('');
+                    return false;
+                });
+                socket.on('chat message', function(msg){
+                    $('#messages').append($('<li>').text(msg));
+                });
+            });
+
+        </script>
+    </head>
+    <body>
+    <ul id="messages"></ul>
+    <form action="">
+        <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    </body>
+</html>-->
