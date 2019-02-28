@@ -3,6 +3,9 @@ const express = require('express');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
+const games = {
+};
+
 app.get('/', (req, res) => {
     res.sendFile( __dirname + '/index.html');
 });
@@ -10,17 +13,15 @@ app.get('/', (req, res) => {
 app.use(express.static('assets'));
 
 io.on('connection', socket => {
-    console.log('a user connected');
-    socket.on('disconnect', _ => {
-        console.log('user disconnected');
-    });
-});
-
-io.on('connection', socket => {
     socket.on('board fen', fen => {
-        console.log('board fen', fen);
-        io.emit('board fen', fen);
+        games[fen[0]] = fen[1];
+        io.sockets.in(fen[0]).emit('new pos', fen[1]);
     });
+    socket.on('room', room => {
+        socket.join(room);
+        if (!(room in games)) games[room] = 'start';
+        socket.emit('new pos', games[room]);
+    })
 });
 
 http.listen(3000, _ => {

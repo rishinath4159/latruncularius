@@ -7,7 +7,7 @@
     <script src="/js/chessboard-0.3.0.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        $(function () {
+        /*$(function () {
             const socket = io();
             const config = {
                 position: 'start',
@@ -24,11 +24,39 @@
             });
 
             const board1 = ChessBoard('board1', config);
+        });*/
+
+        const socket = io();
+        let room;
+        socket.emit('room', room);
+
+        function newRoom(){
+            room = prompt("Room ID");
+            socket.emit('room', room);
+        }
+
+        $(function () {
+            const config = {
+                position: 'start',
+                draggable: true,
+                onDrop: onDrop
+            };
+
+            function onDrop(source, target, piece, newPos, oldPos, orientation) {
+                socket.emit('board fen', [room, ChessBoard.objToFen(newPos)]);
+            };
+
+            socket.on('new pos', pos => {
+                board.position(pos);
+            });
+
+            const board = ChessBoard('board', config);
         });
     </script>
 </head>
 <body>
-    <div id="board1" style="width: 400px"></div>
+    <div id="board" style="width: 400px"></div>
+    <button onclick="newRoom()">New room</button>
 </body>
 </html>
 
