@@ -1,5 +1,6 @@
 const app = require('express')();
 const express = require('express');
+const Chess = require('chess.js').Chess;
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
@@ -13,15 +14,23 @@ app.get('/', (req, res) => {
 app.use(express.static('assets'));
 
 io.on('connection', socket => {
-    socket.on('board fen', fen => {
-        games[fen[0]] = fen[1];
-        io.sockets.in(fen[0]).emit('new pos', fen[1]);
+    io.emit('rooms', games);
+
+    socket.on('move', (room, source, target) => {
+        let move = games[room].move({
+            from: source,
+            to: target,
+            promotion: 'q'
+        });
+        socket.emit('new pos', games[room].fen());
     });
+
     socket.on('room', room => {
         socket.join(room);
-        if (!(room in games)) games[room] = 'start';
-        socket.emit('new pos', games[room]);
-    })
+        if (!(room in games)) { games[room] = new Chess(); io.emit('rooms', games); }
+        socket.emit('new pos', games[room].fen());
+    });
+
 });
 
 http.listen(3000, _ => {

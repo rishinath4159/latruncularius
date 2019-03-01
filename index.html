@@ -2,49 +2,45 @@
 <html>
 <head>
     <title>latruncularius</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="/css/chessboard-0.3.0.css"/>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="/js/chessboard-0.3.0.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        /*$(function () {
-            const socket = io();
-            const config = {
-                position: 'start',
-                draggable: true,
-                onDrop: onDrop
-            };
-
-            function onDrop(source, target, piece, newPos, oldPos, orientation) {
-                socket.emit('board fen', ChessBoard.objToFen(newPos));
-            };
-
-            socket.on('board fen', fen => {
-                board1.position(fen);
-            });
-
-            const board1 = ChessBoard('board1', config);
-        });*/
-
         const socket = io();
-        let room;
-        socket.emit('room', room);
+        let room = Math.random().toString(36).substring(7);
 
-        function newRoom(){
+        const joinroom = _ => {
             room = prompt("Room ID");
             socket.emit('room', room);
-        }
+            $("#room").text(`Current Room: ${room}`);
+        };
 
         $(function () {
+            socket.emit('room', room);
+            $("#room").text(`Current Room: ${room}`);
+
+            $("#join-room").click(_ => {joinroom()});
+
+            socket.on('rooms', rooms => {
+                $("#rooms").empty();
+                console.log(rooms);
+                (Object.keys(rooms)).forEach(room => {
+                    console.log(room);
+                    room.length > 0 ? $("#rooms").append(`<li class="list-group-item">${room}</li>`) : null;
+                })
+            });
+
             const config = {
-                position: 'start',
                 draggable: true,
-                onDrop: onDrop
+                position: 'start',
+                onSnapEnd: onSnapEnd
             };
 
-            function onDrop(source, target, piece, newPos, oldPos, orientation) {
-                socket.emit('board fen', [room, ChessBoard.objToFen(newPos)]);
-            };
+            function onSnapEnd(source, target) {
+                socket.emit('move', room, source, target);
+            }
 
             socket.on('new pos', pos => {
                 board.position(pos);
@@ -54,37 +50,22 @@
         });
     </script>
 </head>
-<body>
-    <div id="board" style="width: 400px"></div>
-    <button onclick="newRoom()">New room</button>
+<body style="text-align: center">
+    <button type="button"
+            style="margin: 30px"
+            class="btn btn-primary"
+            id="join-room">
+        Join a Room</button>
+    <div id="room"
+         style="display: inline-block"
+         class="alert alert-primary"
+         role="alert">
+        Not in a room</div>
+    <div id="board"
+         style="margin: auto;
+         width: 400px"></div>
+    <ul style="margin: 50px"
+        id="rooms" class="list-group">
+    </ul>
 </body>
 </html>
-
-<!--<html>
-    <head>
-        <script src="/socket.io/socket.io.js"></script>
-        <link rel="stylesheet" type="text/css" href="/css/chessboard-0.3.0.css">
-        <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-        <script>
-            $(function () {
-                const socket = io();
-                $('form').submit(function(e){
-                    e.preventDefault(); // prevents page reloading
-                    socket.emit('chat message', $('#m').val());
-                    $('#m').val('');
-                    return false;
-                });
-                socket.on('chat message', function(msg){
-                    $('#messages').append($('<li>').text(msg));
-                });
-            });
-
-        </script>
-    </head>
-    <body>
-    <ul id="messages"></ul>
-    <form action="">
-        <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
-    </body>
-</html>-->
