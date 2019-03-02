@@ -13,6 +13,7 @@
 
         const joinroom = _ => {
             room = prompt("Room ID");
+            while (room.includes('>')) { room = prompt("Room ID \n Can only include regular characters.") }
             socket.emit('room', room);
             $("#room").text(`Current Room: ${room}`);
         };
@@ -24,12 +25,17 @@
             $("#join-room").click(_ => {joinroom()});
 
             socket.on('rooms', rooms => {
-                $("#rooms").empty();
-                console.log(rooms);
+                $("#rooms").html(`<li class="list-group-item list-group-item-info">Rooms</li>`);
                 (Object.keys(rooms)).forEach(room => {
-                    console.log(room);
                     room.length > 0 ? $("#rooms").append(`<li class="list-group-item">${room}</li>`) : null;
                 })
+            });
+
+            socket.on('history', events => {
+                $("#history").html(`<li class="list-group-item list-group-item-info">History</li>`);
+                events.reverse().forEach((event, index, events) => {
+                    $("#history").append(`<li class="list-group-item list-group-item-${(events.length & 1) === (index & 1) ? "dark" : "light"}">${event}</li>`)
+                });
             });
 
             const config = {
@@ -50,22 +56,35 @@
         });
     </script>
 </head>
-<body style="text-align: center">
-    <button type="button"
-            style="margin: 30px"
-            class="btn btn-primary"
-            id="join-room">
-        Join a Room</button>
-    <div id="room"
-         style="display: inline-block"
-         class="alert alert-primary"
-         role="alert">
-        Not in a room</div>
-    <div id="board"
-         style="margin: auto;
-         width: 400px"></div>
-    <ul style="margin: 50px"
-        id="rooms" class="list-group">
-    </ul>
+<body style="text-align: center;">
+    <div class="row">
+        <div class="col-sm">
+            <ul style="margin: 50px"
+                id="history" class="list-group">
+                <li class="list-group-item list-group-item-info">History</li>
+            </ul>
+        </div>
+        <div class="col-sm">
+            <button type="button"
+                    style="margin: 30px"
+                    class="btn btn-primary"
+                    id="join-room">
+                Join a Room</button>
+            <div id="board"
+                 style="margin: auto;
+            width: 400px"></div>
+            <div id="room"
+                 style="display: inline-block; margin: 30px"
+                 class="alert alert-primary"
+                 role="alert">
+                Not in a room</div>
+        </div>
+        <div class="col-sm">
+            <ul style="margin: 50px"
+                id="rooms" class="list-group">
+                <li class="list-group-item list-group-item-info">Rooms</li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>

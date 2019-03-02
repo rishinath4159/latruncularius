@@ -23,12 +23,14 @@ io.on('connection', socket => {
             promotion: 'q'
         });
         socket.emit('new pos', games[room].fen());
+        socket.emit('history', games[room].history());
     });
 
     socket.on('room', room => {
         socket.join(room);
         if (!(room in games)) { games[room] = new Chess(); io.emit('rooms', games); }
         socket.emit('new pos', games[room].fen());
+        socket.emit('history', games[room].history());
     });
 
 });
