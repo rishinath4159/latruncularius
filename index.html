@@ -7,54 +7,7 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script src="/js/chessboard-0.3.0.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-        let room = Math.random().toString(36).substring(7);
-
-        const joinroom = _ => {
-            room = prompt("Room ID");
-            while (room.includes('>')) { room = prompt("Room ID \n Can only include regular characters.") }
-            socket.emit('room', room);
-            $("#room").text(`Current Room: ${room}`);
-        };
-
-        $(function () {
-            socket.emit('room', room);
-            $("#room").text(`Current Room: ${room}`);
-
-            $("#join-room").click(_ => {joinroom()});
-
-            socket.on('rooms', rooms => {
-                $("#rooms").html(`<li class="list-group-item list-group-item-info">Rooms</li>`);
-                (Object.keys(rooms)).forEach(room => {
-                    room.length > 0 ? $("#rooms").append(`<li class="list-group-item">${room}</li>`) : null;
-                })
-            });
-
-            socket.on('history', events => {
-                $("#history").html(`<li class="list-group-item list-group-item-info">History</li>`);
-                events.reverse().forEach((event, index, events) => {
-                    $("#history").append(`<li class="list-group-item list-group-item-${(events.length & 1) === (index & 1) ? "dark" : "light"}">${event}</li>`)
-                });
-            });
-
-            const config = {
-                draggable: true,
-                position: 'start',
-                onSnapEnd: onSnapEnd
-            };
-
-            function onSnapEnd(source, target) {
-                socket.emit('move', room, source, target);
-            }
-
-            socket.on('new pos', pos => {
-                board.position(pos);
-            });
-
-            const board = ChessBoard('board', config);
-        });
-    </script>
+    <script src="/latruncularius.js"></script>
 </head>
 <body style="text-align: center;">
     <div class="row">
